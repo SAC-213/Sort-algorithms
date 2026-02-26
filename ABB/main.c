@@ -4,13 +4,22 @@
 
 int main(int argc, char *argv[])
 {
-	ArbolBinario = arbol
-	Inicializar(arbol);
-	int a[3] = {1,2,3};
-	
-	for (int i = 0; i < 3; i++)
+	arbolBinario arbol;
+	Inicializar(&arbol);
+	int a[10] = {89, 60, 5, 19, 69, 31, 0, -5, 201, 42};
+	int i = 0;
+
+	for (int j = 0; j < 10; j++)
 	{
-		Insert(arbol,a[i]);
+		Insert(&arbol, a[j]);
 	}
-	PreOrden(&arbol,Raiz(&arbol));
+
+	InOrden(&arbol, Raiz(&arbol), a, &i);
+
+	Destruir(&arbol);
+
+	for (int j = 0; j < 10; j++)
+	{
+		printf("[%d]",a[j]);
+	}
 }

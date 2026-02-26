@@ -1,13 +1,19 @@
+/*TAD Arbol Binario de Búsqueda ABB, dirigido a ordenar un arreglode números.
+Autor: Saul Ascencion Cruz
+Fecha: 25 de Febrero del 2026
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "TADArbolBin.h"
 
+/*Reserva el espacio necesario para crear el ABB*/
 void Inicializar(arbolBinario *a)
 {
   *a = NULL;
 }
 
+/*Libera la memoria necesaria para crear el ABB*/
 void Destruir(arbolBinario *a)
 {
   if (*a != NULL)
@@ -25,35 +31,13 @@ void Destruir(arbolBinario *a)
   }
 }
 
+/*Regresa el nodo raíz del subárbol*/
 posicion Raiz(arbolBinario *a)
 {
   return *a;
 }
 
-posicion Padre(arbolBinario *a, posicion p)
-{
-  posicion padre = NULL;
-  if (*a != NULL)
-  {
-    if ((*a)->hijoIzq == p || (*a)->hijoDer == p)
-    {
-      padre = *a;
-    }
-
-    if ((*a)->hijoIzq != NULL)
-      padre = Padre(&((*a)->hijoIzq), p);
-
-    if ((*a)->hijoDer != NULL)
-      padre = Padre(&((*a)->hijoDer), p);
-  }
-  else
-  {
-    printf("ERROR: la posicion dada no es valida (Padre)");
-    exit(1);
-  }
-  return padre;
-}
-
+/*Regresa el hijo derecho del nodo actual*/
 posicion HijoDerecho(arbolBinario *a, posicion p)
 {
   posicion regreso = NULL;
@@ -68,6 +52,7 @@ posicion HijoDerecho(arbolBinario *a, posicion p)
   return regreso;
 }
 
+/*Regresa el hijo izquierdo del nodo actual*/
 posicion HijoIzquierdo(arbolBinario *a, posicion p)
 {
   posicion regreso = NULL;
@@ -82,33 +67,17 @@ posicion HijoIzquierdo(arbolBinario *a, posicion p)
   return regreso;
 }
 
-posicion Buscar(arbolBinario *a, elemento e)
-{
-  posicion p = NULL;
-  if (!Vacio(&(*a)))
-  {
-    if (memcmp(&((*a)->valor), &e, sizeof(elemento)) == 0)
-    {
-      p = *a;
-    }
-
-    if ((*a)->hijoIzq != NULL)
-      p = Buscar(&(*a)->hijoIzq, e);
-
-    if ((*a)->hijoDer != NULL && p == NULL)
-      p = Buscar(&(*a)->hijoDer, e);
-  }
-  return p;
-}
-
-bool Vacio(arbolBinario *a)
+/*Verifica si un nodo está vacío. Si el nodo está vacío regresa FALSE, por el contrario si el nodo NO
+está vacío regresa TRUE*/
+boolean Vacio(arbolBinario *a)
 {
   return ((*a) == NULL);
 }
 
-bool NodoNulo(arbolBinario *a, posicion p)
+/*Verifica si el nodo dado pertenece al ABB*/
+boolean NodoNulo(arbolBinario *a, posicion p)
 {
-  bool respuesta = TRUE;
+  boolean respuesta = TRUE;
   if (!(*a == NULL || p == NULL))
   {
     if (!(*a == p))
@@ -126,6 +95,7 @@ bool NodoNulo(arbolBinario *a, posicion p)
   return respuesta;
 }
 
+/*Regresa el elemento del nodo dado*/
 elemento LeerNodo(arbolBinario *a, posicion p)
 {
   if (!NodoNulo(&(*a), p))
@@ -139,33 +109,8 @@ elemento LeerNodo(arbolBinario *a, posicion p)
   }
 }
 
-void Insert(arbolBinario *a, elemento e)
-{
-	if(Vacio(&(*a)))
-	{
-		*a = malloc(sizeof(nodo));
-		if(*a==NULL)
-		{
-			printf("No se pudo reservar memoria");
-			exit(1);
-		}
-		(*a)->hijoIzq = NULL;
-		(*a)->hijoDer = NULL;
-		(*a)->valor.numero = e.numero;
-	}
-	else if (e.numero < (*a)->valor.numero)
-	{
-		Insert((*a)->hijoIzq,e);
-		return;
-	}
-	else if (e.numero > (*a)->valor.numero)
-	{
-		Insert((*a)->hijoDer,e);
-		return;
-	}
-}
-
-void NuevoHijoDerecho(arbolBinario *a, posicion p, elemento e)
+/*Inserta un elemento en un árbol siguiendo las reglas del ABB*/
+void Insert(arbolBinario *a, int number)
 {
   if (Vacio(&(*a)))
   {
@@ -177,157 +122,28 @@ void NuevoHijoDerecho(arbolBinario *a, posicion p, elemento e)
     }
     (*a)->hijoIzq = NULL;
     (*a)->hijoDer = NULL;
-    (*a)->valor = e;
+    (*a)->valor.numero = number;
   }
-  else if (!NodoNulo(&(*a), p))
+  else if (number < (*a)->valor.numero)
   {
-    if (p->hijoDer != NULL)
-    {
-      printf("ERROR: La posicion p ya tiene un hijo derecho (Nuevo Hijo Derecho)");
-      exit(1);
-    }
-    p->hijoDer = malloc(sizeof(nodo));
-    p->hijoDer->hijoIzq = NULL;
-    p->hijoDer->hijoDer = NULL;
-    p->hijoDer->valor = e;
+    Insert(&((*a)->hijoIzq), number);
+    return;
   }
-  else
+  else if (number > (*a)->valor.numero)
   {
-    printf("ERROR: La posicion dada no es valida (Nuevo Hijo Derecho)");
-    exit(1);
+    Insert(&((*a)->hijoDer), number);
+    return;
   }
 }
 
-void NuevoHijoIzquierdo(arbolBinario *a, posicion p, elemento e)
-{
-  if (Vacio(&(*a)))
-  {
-    *a = malloc(sizeof(nodo));
-    if (*a == NULL)
-    {
-      printf("No se pudo reservar memoria");
-      exit(1);
-    }
-    (*a)->hijoIzq = NULL;
-    (*a)->hijoDer = NULL;
-    (*a)->valor = e;
-  }
-  else
-  {
-    if (!NodoNulo(&(*a), p))
-    {
-      if (p->hijoIzq != NULL)
-      {
-        printf("ERROR: La posicion p ya tiene un hijo izquierdo (Nuevo Hijo Izquierdo)");
-        exit(1);
-      }
-      p->hijoIzq = malloc(sizeof(nodo));
-      p->hijoIzq->hijoIzq = NULL;
-      p->hijoIzq->hijoDer = NULL;
-      p->hijoIzq->valor = e;
-    }
-    else
-    {
-      printf("ERROR: La posicion dada no es valida (Nuevo Hijo Izquierdo)");
-      exit(1);
-    }
-  }
-}
-
-void BorrarHijoDerecho(arbolBinario *a, posicion p)
-{
-  if (!NodoNulo(&(*a), p))
-  {
-    Destruir(&p->hijoDer);
-    p->hijoDer = NULL;
-  }
-  else
-  {
-    printf("ERROR: La posicion dada no es valida (Destruir hijo derecho)");
-    exit(1);
-  }
-}
-
-void BorrarHijoIzquierdo(arbolBinario *a, posicion p)
-{
-  if (!NodoNulo(&(*a), p))
-  {
-    Destruir(&p->hijoIzq);
-    p->hijoIzq = NULL;
-  }
-  else
-  {
-    printf("ERROR: La posicion dada no es valida (Destruir hijo derecho)");
-    exit(1);
-  }
-}
-
-void BorrarNodo(arbolBinario *a, posicion p)
-{
-  if (!NodoNulo(&(*a), p))
-  {
-    posicion padre = Padre(a, p);
-    if (padre->hijoDer == p)
-    {
-      padre->hijoDer = NULL;
-    }
-    else if (padre->hijoIzq == p)
-    {
-      padre->hijoIzq = NULL;
-    }
-    Destruir(&p);
-  }
-  else
-  {
-    printf("ERROR: La posicion no es valida (Borrar Nodo)");
-    exit(1);
-  }
-}
-
-void ReemplazarNodo(arbolBinario *a, posicion p, elemento e)
-{
-  if (!NodoNulo(&(*a), p))
-  {
-    p->valor = e;
-  }
-  else
-  {
-    printf("ERROR: La posicion dada no es valida (Reemplazar Nodo)");
-    exit(1);
-  }
-}
-
-void ImprimirElemento(elemento e)
-{
-  printf("%s: %s\n", e.palabra, e.definicion);
-}
-
-void PreOrden(arbolBinario *a, posicion p)
+/*Recorre el ABB y sobreescribe el arreglo dado*/
+void InOrden(arbolBinario *a, posicion p, int array[], int *i)
 {
   if (p == NULL)
     return;
 
-  ImprimirElemento(LeerNodo(a, p));
-  PreOrden(a, HijoIzquierdo(a, p));
-  PreOrden(a, HijoDerecho(a, p));
-}
-
-void InOrden(arbolBinario *a, posicion p)
-{
-  if (p == NULL)
-    return;
-
-  InOrden(a, HijoIzquierdo(a, p));
-  ImprimirElemento(LeerNodo(a, p));
-  InOrden(a, HijoDerecho(a, p));
-}
-
-void PostOrden(arbolBinario *a, posicion p)
-{
-  if (p == NULL)
-    return;
-
-  PostOrden(a, HijoIzquierdo(a, p));
-  PostOrden(a, HijoDerecho(a, p));
-  ImprimirElemento(LeerNodo(a, p));
+  InOrden(a, HijoIzquierdo(a, p), array, i);
+  array[*(i)] = LeerNodo(a, p).numero;
+  (*i)++;
+  InOrden(a, HijoDerecho(a, p), array, i);
 }
