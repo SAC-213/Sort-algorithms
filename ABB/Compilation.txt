@@ -1,0 +1,1 @@
+gcc TADArbolBin.o main.c -o main.exe
